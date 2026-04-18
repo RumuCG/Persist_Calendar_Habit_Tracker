@@ -1,0 +1,122 @@
+/**
+ * 中国节假日数据（支持 2024-2026 年常见节假日）
+ * 格式：YYYY-MM-DD -> 节假日名称
+ * 调休上班日以 work 标记
+ */
+const holidayData: Record<string, { name: string; type: 'holiday' | 'work' }> = {
+  // 2024
+  '2024-01-01': { name: '元旦', type: 'holiday' },
+  '2024-02-10': { name: '春节', type: 'holiday' },
+  '2024-02-11': { name: '春节', type: 'holiday' },
+  '2024-02-12': { name: '春节', type: 'holiday' },
+  '2024-02-13': { name: '春节', type: 'holiday' },
+  '2024-02-14': { name: '春节', type: 'holiday' },
+  '2024-02-15': { name: '春节', type: 'holiday' },
+  '2024-02-16': { name: '春节', type: 'holiday' },
+  '2024-02-17': { name: '春节', type: 'holiday' },
+  '2024-04-04': { name: '清明', type: 'holiday' },
+  '2024-04-05': { name: '清明', type: 'holiday' },
+  '2024-04-06': { name: '清明', type: 'holiday' },
+  '2024-05-01': { name: '劳动节', type: 'holiday' },
+  '2024-05-02': { name: '劳动节', type: 'holiday' },
+  '2024-05-03': { name: '劳动节', type: 'holiday' },
+  '2024-05-04': { name: '劳动节', type: 'holiday' },
+  '2024-05-05': { name: '劳动节', type: 'holiday' },
+  '2024-06-10': { name: '端午', type: 'holiday' },
+  '2024-09-15': { name: '中秋', type: 'holiday' },
+  '2024-09-16': { name: '中秋', type: 'holiday' },
+  '2024-09-17': { name: '中秋', type: 'holiday' },
+  '2024-10-01': { name: '国庆', type: 'holiday' },
+  '2024-10-02': { name: '国庆', type: 'holiday' },
+  '2024-10-03': { name: '国庆', type: 'holiday' },
+  '2024-10-04': { name: '国庆', type: 'holiday' },
+  '2024-10-05': { name: '国庆', type: 'holiday' },
+  '2024-10-06': { name: '国庆', type: 'holiday' },
+  '2024-10-07': { name: '国庆', type: 'holiday' },
+  // 2024 调休上班
+  '2024-02-04': { name: '班', type: 'work' },
+  '2024-02-18': { name: '班', type: 'work' },
+  '2024-04-07': { name: '班', type: 'work' },
+  '2024-04-28': { name: '班', type: 'work' },
+  '2024-05-11': { name: '班', type: 'work' },
+  '2024-09-14': { name: '班', type: 'work' },
+  '2024-09-29': { name: '班', type: 'work' },
+  '2024-10-12': { name: '班', type: 'work' },
+
+  // 2025
+  '2025-01-01': { name: '元旦', type: 'holiday' },
+  '2025-01-28': { name: '春节', type: 'holiday' },
+  '2025-01-29': { name: '春节', type: 'holiday' },
+  '2025-01-30': { name: '春节', type: 'holiday' },
+  '2025-01-31': { name: '春节', type: 'holiday' },
+  '2025-02-01': { name: '春节', type: 'holiday' },
+  '2025-02-02': { name: '春节', type: 'holiday' },
+  '2025-02-03': { name: '春节', type: 'holiday' },
+  '2025-02-04': { name: '春节', type: 'holiday' },
+  '2025-04-04': { name: '清明', type: 'holiday' },
+  '2025-04-05': { name: '清明', type: 'holiday' },
+  '2025-04-06': { name: '清明', type: 'holiday' },
+  '2025-05-01': { name: '劳动节', type: 'holiday' },
+  '2025-05-02': { name: '劳动节', type: 'holiday' },
+  '2025-05-03': { name: '劳动节', type: 'holiday' },
+  '2025-05-04': { name: '劳动节', type: 'holiday' },
+  '2025-05-05': { name: '劳动节', type: 'holiday' },
+  '2025-05-31': { name: '端午', type: 'holiday' },
+  '2025-06-01': { name: '端午', type: 'holiday' },
+  '2025-06-02': { name: '端午', type: 'holiday' },
+  '2025-10-01': { name: '国庆', type: 'holiday' },
+  '2025-10-02': { name: '国庆', type: 'holiday' },
+  '2025-10-03': { name: '国庆', type: 'holiday' },
+  '2025-10-04': { name: '国庆', type: 'holiday' },
+  '2025-10-05': { name: '国庆', type: 'holiday' },
+  '2025-10-06': { name: '国庆', type: 'holiday' },
+  '2025-10-07': { name: '国庆', type: 'holiday' },
+  '2025-10-08': { name: '国庆', type: 'holiday' },
+  // 2025 调休上班
+  '2025-01-26': { name: '班', type: 'work' },
+  '2025-02-08': { name: '班', type: 'work' },
+  '2025-04-27': { name: '班', type: 'work' },
+  '2025-09-28': { name: '班', type: 'work' },
+  '2025-10-11': { name: '班', type: 'work' },
+
+  // 2026
+  '2026-01-01': { name: '元旦', type: 'holiday' },
+  '2026-01-02': { name: '元旦', type: 'holiday' },
+  '2026-01-03': { name: '元旦', type: 'holiday' },
+  '2026-02-17': { name: '春节', type: 'holiday' },
+  '2026-02-18': { name: '春节', type: 'holiday' },
+  '2026-02-19': { name: '春节', type: 'holiday' },
+  '2026-02-20': { name: '春节', type: 'holiday' },
+  '2026-02-21': { name: '春节', type: 'holiday' },
+  '2026-02-22': { name: '春节', type: 'holiday' },
+  '2026-02-23': { name: '春节', type: 'holiday' },
+  '2026-02-24': { name: '春节', type: 'holiday' },
+  '2026-04-04': { name: '清明', type: 'holiday' },
+  '2026-04-05': { name: '清明', type: 'holiday' },
+  '2026-04-06': { name: '清明', type: 'holiday' },
+  '2026-05-01': { name: '劳动节', type: 'holiday' },
+  '2026-05-02': { name: '劳动节', type: 'holiday' },
+  '2026-05-03': { name: '劳动节', type: 'holiday' },
+  '2026-05-04': { name: '劳动节', type: 'holiday' },
+  '2026-05-05': { name: '劳动节', type: 'holiday' },
+  '2026-06-19': { name: '端午', type: 'holiday' },
+  '2026-06-20': { name: '端午', type: 'holiday' },
+  '2026-06-21': { name: '端午', type: 'holiday' },
+  '2026-10-01': { name: '国庆', type: 'holiday' },
+  '2026-10-02': { name: '国庆', type: 'holiday' },
+  '2026-10-03': { name: '国庆', type: 'holiday' },
+  '2026-10-04': { name: '国庆', type: 'holiday' },
+  '2026-10-05': { name: '国庆', type: 'holiday' },
+  '2026-10-06': { name: '国庆', type: 'holiday' },
+  '2026-10-07': { name: '国庆', type: 'holiday' },
+  '2026-10-08': { name: '国庆', type: 'holiday' },
+}
+
+export function getHolidayInfo(date: string): { name: string; type: 'holiday' | 'work' } | null {
+  return holidayData[date] || null
+}
+
+export function isWeekend(date: string): boolean {
+  const day = new Date(date).getDay()
+  return day === 0 || day === 6
+}
