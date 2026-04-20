@@ -4,15 +4,25 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores'
 import { getLeaderboard, type LeaderboardEntry } from '@/api/plan'
 import { ElMessage } from 'element-plus'
-import { Trophy, ArrowLeft } from '@element-plus/icons-vue'
+import { Trophy, ArrowLeft, Timer, List } from '@element-plus/icons-vue'
+import { useFocusStore } from '@/stores/focus'
 
 type Period = 'daily' | 'monthly' | 'yearly'
+type LeaderboardType = 'tasks' | 'focus'
+
+interface LeaderboardItem extends LeaderboardEntry {
+  sessionCount?: number
+  totalDuration?: number
+  rank?: number
+}
 
 const router = useRouter()
 const userStore = useUserStore()
+const focusStore = useFocusStore()
 
 const period = ref<Period>('daily')
-const leaderboard = ref<LeaderboardEntry[]>([])
+const leaderboardType = ref<LeaderboardType>('tasks')
+const leaderboard = ref<LeaderboardItem[]>([])
 const loading = ref(false)
 
 const periodLabels: Record<Period, string> = {
@@ -24,9 +34,29 @@ const periodLabels: Record<Period, string> = {
 const fetchLeaderboard = async () => {
   loading.value = true
   try {
-    const result = await getLeaderboard(period.value)
-    if (result.data.success) {
-      leaderboard.value = result.data.data.leaderboard
+    if (leaderboardType.value === 'tasks') {
+      const result = await getLeaderboard(period.value)
+      if (result.data.success) {
+        leaderboard.value = result.data.data.leaderboard
+      }
+    } else {
+      // 专注时长排行榜
+      const periodMap: Record<Period, 'DAY' | 'WEEK' | 'MONTH' | 'YEAR'> = {
+        daily: 'DAY',
+        monthly: 'MONTH',
+        yearly: 'YEAR',
+      }
+      await focusStore.fetchLeaderboard(periodMap[period.value])
+      if (focusStore.leaderboard) {
+        // 转换为统一的格式
+        leaderboard.value = focusStore.leaderboard.rankings.map(r => ({
+          userId: r.userId,
+          username: r.username,
+          totalPlans: r.sessionCount,
+          completedPlans: r.sessionCount,
+          completionRate: Math.min(100, Math.round((r.totalDuration / 3600) * 10)), // 用时长计算一个展示值
+        }))
+      }
     }
   } catch (error: any) {
     ElMessage.error(error.message || '获取排行榜失败')
@@ -35,7 +65,7 @@ const fetchLeaderboard = async () => {
   }
 }
 
-watch(period, fetchLeaderboard)
+watch([period, leaderboardType], fetchLeaderboard)
 onMounted(fetchLeaderboard)
 
 const goBack = () => router.push('/')
@@ -43,6 +73,11 @@ const goBack = () => router.push('/')
 const currentUserRank = computed(() => {
   const userId = userStore.user?.id
   if (!userId) return null
+
+  if (leaderboardType.value === 'focus' && focusStore.leaderboard?.currentUser) {
+    return focusStore.leaderboard.currentUser.rank
+  }
+
   const index = leaderboard.value.findIndex(entry => entry.userId === userId)
   return index >= 0 ? index + 1 : null
 })
@@ -60,6 +95,24 @@ const getRankIcon = (index: number) => {
   if (index === 2) return '🥉'
   return null
 }
+
+// Format duration
+const formatDuration = (seconds: number) => {
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  if (hours > 0) {
+    return `${hours}小时${minutes}分钟`
+  }
+  return `${minutes}分钟`
+}
+
+// Get current user stats
+const currentUserStats = computed(() => {
+  if (leaderboardType.value === 'focus') {
+    return focusStore.leaderboard?.currentUser as LeaderboardItem | undefined
+  }
+  return leaderboard.value.find(e => e.userId === userStore.user?.id)
+})
 </script>
 
 <template>
@@ -76,6 +129,26 @@ const getRankIcon = (index: number) => {
           任务排行榜
         </h1>
         <div class="spacer"></div>
+      </div>
+
+      <!-- Type Tabs -->
+      <div class="type-tabs">
+        <button
+          class="type-tab"
+          :class="{ active: leaderboardType === 'tasks' }"
+          @click="leaderboardType = 'tasks'"
+        >
+          <el-icon><List /></el-icon>
+          任务完成率
+        </button>
+        <button
+          class="type-tab"
+          :class="{ active: leaderboardType === 'focus' }"
+          @click="leaderboardType = 'focus'"
+        >
+          <el-icon><Timer /></el-icon>
+          专注时长
+        </button>
       </div>
 
       <!-- Period Tabs -->
@@ -103,18 +176,34 @@ const getRankIcon = (index: number) => {
           </div>
         </div>
         <div class="my-rank-stats">
-          <div class="mini-stat">
-            <span class="mini-stat-value">
-              {{ leaderboard.find(e => e.userId === userStore.user?.id)?.completedPlans || 0 }}
-            </span>
-            <span class="mini-stat-label">已完成</span>
-          </div>
-          <div class="mini-stat">
-            <span class="mini-stat-value">
-              {{ leaderboard.find(e => e.userId === userStore.user?.id)?.completionRate || 0 }}%
-            </span>
-            <span class="mini-stat-label">完成率</span>
-          </div>
+          <template v-if="leaderboardType === 'tasks'">
+            <div class="mini-stat">
+              <span class="mini-stat-value">
+                {{ leaderboard.find(e => e.userId === userStore.user?.id)?.completedPlans || 0 }}
+              </span>
+              <span class="mini-stat-label">已完成</span>
+            </div>
+            <div class="mini-stat">
+              <span class="mini-stat-value">
+                {{ leaderboard.find(e => e.userId === userStore.user?.id)?.completionRate || 0 }}%
+              </span>
+              <span class="mini-stat-label">完成率</span>
+            </div>
+          </template>
+          <template v-else>
+            <div class="mini-stat">
+              <span class="mini-stat-value">
+                {{ formatDuration(currentUserStats?.totalDuration || 0) }}
+              </span>
+              <span class="mini-stat-label">专注时长</span>
+            </div>
+            <div class="mini-stat">
+              <span class="mini-stat-value">
+                {{ currentUserStats?.sessionCount || 0 }}
+              </span>
+              <span class="mini-stat-label">专注次数</span>
+            </div>
+          </template>
         </div>
       </div>
 
@@ -138,20 +227,31 @@ const getRankIcon = (index: number) => {
           <div class="user-details">
             <span class="username">{{ entry.username }}</span>
             <span class="user-meta">
-              {{ entry.completedPlans }} / {{ entry.totalPlans }} 完成
+              <template v-if="leaderboardType === 'tasks'">
+                {{ entry.completedPlans }} / {{ entry.totalPlans }} 完成
+              </template>
+              <template v-else>
+                {{ entry.sessionCount || 0 }} 次专注
+              </template>
             </span>
           </div>
 
-          <div class="completion-bar">
-            <div
-              class="completion-fill"
-              :style="{ width: `${entry.completionRate}%` }"
-            ></div>
-          </div>
-
-          <div class="completion-rate">
-            {{ entry.completionRate }}%
-          </div>
+          <template v-if="leaderboardType === 'tasks'">
+            <div class="completion-bar">
+              <div
+                class="completion-fill"
+                :style="{ width: `${entry.completionRate}%` }"
+              ></div>
+            </div>
+            <div class="completion-rate">
+              {{ entry.completionRate }}%
+            </div>
+          </template>
+          <template v-else>
+            <div class="focus-duration">
+              {{ formatDuration(entry.totalDuration || 0) }}
+            </div>
+          </template>
         </div>
 
         <!-- Empty State -->
@@ -226,6 +326,47 @@ const getRankIcon = (index: number) => {
 
 .spacer {
   width: 80px;
+}
+
+/* Type Tabs */
+.type-tabs {
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 6px;
+  border-radius: var(--radius-full);
+  margin-bottom: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.type-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.type-tab:hover {
+  color: var(--text-primary);
+}
+
+.type-tab.active {
+  background: white;
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.type-tab .el-icon {
+  font-size: 16px;
 }
 
 /* Period Tabs */
@@ -447,6 +588,14 @@ const getRankIcon = (index: number) => {
   font-size: 14px;
   font-weight: 700;
   color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.focus-duration {
+  font-size: 14px;
+  font-weight: 600;
+  color: #409EFF;
+  white-space: nowrap;
   flex-shrink: 0;
 }
 

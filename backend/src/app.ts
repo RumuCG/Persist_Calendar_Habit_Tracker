@@ -5,6 +5,7 @@ import { config } from './config';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import authRoutes from './routes/authRoutes';
 import planRoutes from './routes/planRoutes';
+import focusRoutes from './routes/focusRoutes';
 
 // 创建 Express 应用
 const app = express();
@@ -34,6 +35,7 @@ app.get('/health', (_req, res) => {
 // API 路由
 app.use('/api/auth', authRoutes);
 app.use('/api/plans', planRoutes);
+app.use('/api/focus', focusRoutes);
 
 // 404 处理
 app.use(notFoundHandler);

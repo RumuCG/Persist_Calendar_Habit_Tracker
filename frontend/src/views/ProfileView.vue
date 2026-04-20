@@ -4,14 +4,43 @@ import dayjs from 'dayjs'
 import { useUserStore } from '@/stores'
 import { getUserStats, type UserStats } from '@/api/plan'
 import { ElMessage } from 'element-plus'
-import { Trophy, CircleCheck, List, TrendCharts, Calendar, ArrowLeft } from '@element-plus/icons-vue'
+import { Trophy, CircleCheck, List, TrendCharts, Calendar, ArrowLeft, Timer } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
+import { useFocusStore } from '@/stores/focus'
+import type { FocusStats } from '@/api/focus'
+import { use } from 'echarts/core'
+import { CanvasRenderer } from 'echarts/renderers'
+import { PieChart, BarChart, LineChart } from 'echarts/charts'
+import {
+  GridComponent,
+  TooltipComponent,
+  LegendComponent,
+  TitleComponent
+} from 'echarts/components'
+import VChart from 'vue-echarts'
+import * as echarts from 'echarts'
+
+// 注册 ECharts 组件
+use([
+  CanvasRenderer,
+  PieChart,
+  BarChart,
+  LineChart,
+  GridComponent,
+  TooltipComponent,
+  LegendComponent,
+  TitleComponent
+])
 
 const userStore = useUserStore()
+const focusStore = useFocusStore()
 const router = useRouter()
 
 const stats = ref<UserStats | null>(null)
+const focusStats = ref<FocusStats | null>(null)
 const loading = ref(false)
+const focusLoading = ref(false)
+const focusPeriod = ref<'WEEK' | 'MONTH' | 'YEAR' | 'ALL'>('WEEK')
 
 const fetchStats = async () => {
   loading.value = true
@@ -27,8 +56,25 @@ const fetchStats = async () => {
   }
 }
 
+const fetchFocusStats = async () => {
+  focusLoading.value = true
+  try {
+    await focusStore.fetchStats(focusPeriod.value)
+    focusStats.value = focusStore.stats
+  } catch (error: any) {
+    ElMessage.error(error.message || '获取专注统计失败')
+  } finally {
+    focusLoading.value = false
+  }
+}
+
+const handleFocusPeriodChange = () => {
+  fetchFocusStats()
+}
+
 onMounted(() => {
   fetchStats()
+  fetchFocusStats()
 })
 
 const goBack = () => router.push('/')
@@ -55,6 +101,28 @@ const streak = computed(() => {
   }
   return currentStreak
 })
+
+// 格式化时长
+const formatDuration = (seconds: number) => {
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  if (hours > 0) {
+    return `${hours}小时${minutes}分钟`
+  }
+  return `${minutes}分钟`
+}
+
+// 饼图数据
+const pieChartData = computed(() => {
+  if (!focusStats.value?.distribution) return []
+  return focusStats.value.distribution.map(item => ({
+    name: item.title,
+    value: item.duration
+  }))
+})
+
+// 饼图颜色
+const pieChartColors = ['#409EFF', '#67C23A', '#E6A23C', '#F56C6C', '#909399', '#8B5CF6']
 </script>
 
 <template>
@@ -129,6 +197,147 @@ const streak = computed(() => {
             <span class="stat-value">{{ bestDay ? bestDay.completed : 0 }}</span>
             <span class="stat-label">单日最佳</span>
           </div>
+        </div>
+      </div>
+
+      <!-- Focus Stats Section -->
+      <div class="chart-section focus-section" v-if="focusStats">
+        <div class="section-header">
+          <h3 class="section-title">
+            <el-icon class="section-icon"><Timer /></el-icon>
+            专注统计
+          </h3>
+          <el-radio-group v-model="focusPeriod" size="small" @change="handleFocusPeriodChange">
+            <el-radio-button label="WEEK">本周</el-radio-button>
+            <el-radio-button label="MONTH">本月</el-radio-button>
+            <el-radio-button label="YEAR">本年</el-radio-button>
+            <el-radio-button label="ALL">全部</el-radio-button>
+          </el-radio-group>
+        </div>
+
+        <!-- Focus Stats Cards -->
+        <div class="focus-stats-grid">
+          <div class="focus-stat-card">
+            <div class="focus-stat-value">{{ formatDuration(focusStats.totalDuration) }}</div>
+            <div class="focus-stat-label">总专注时长</div>
+          </div>
+          <div class="focus-stat-card">
+            <div class="focus-stat-value">{{ focusStats.totalSessions }}</div>
+            <div class="focus-stat-label">专注次数</div>
+          </div>
+          <div class="focus-stat-card">
+            <div class="focus-stat-value">{{ formatDuration(focusStats.dailyAverage) }}</div>
+            <div class="focus-stat-label">日均专注</div>
+          </div>
+          <div class="focus-stat-card">
+            <div class="focus-stat-value">{{ focusStats.streakDays }}</div>
+            <div class="focus-stat-label">连续专注天数</div>
+          </div>
+        </div>
+
+        <!-- Focus Distribution Chart -->
+        <div v-if="focusStats.distribution.length > 0" class="focus-chart-container">
+          <h4 class="chart-subtitle">专注时长分布</h4>
+          <v-chart
+            class="focus-pie-chart"
+            :option="{
+              tooltip: {
+                trigger: 'item',
+                formatter: (params: any) => {
+                  return `${params.name}<br/>${formatDuration(params.value)} (${params.percent}%)`
+                }
+              },
+              legend: {
+                orient: 'vertical',
+                right: '5%',
+                top: 'center',
+                textStyle: { fontSize: 12 }
+              },
+              series: [
+                {
+                  type: 'pie',
+                  radius: ['40%', '70%'],
+                  center: ['35%', '50%'],
+                  avoidLabelOverlap: false,
+                  itemStyle: {
+                    borderRadius: 8,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                  },
+                  label: {
+                    show: false
+                  },
+                  emphasis: {
+                    label: {
+                      show: true,
+                      fontSize: 14,
+                      fontWeight: 'bold'
+                    }
+                  },
+                  data: pieChartData,
+                  color: pieChartColors
+                }
+              ]
+            }"
+            autoresize
+          />
+        </div>
+
+        <!-- Focus Trend Chart -->
+        <div class="focus-chart-container">
+          <h4 class="chart-subtitle">近7天专注趋势</h4>
+          <v-chart
+            class="focus-line-chart"
+            :option="{
+              tooltip: {
+                trigger: 'axis',
+                formatter: (params: any) => {
+                  const data = params[0]
+                  return `${data.name}<br/>专注时长: ${formatDuration(data.value)}`
+                }
+              },
+              grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+              },
+              xAxis: {
+                type: 'category',
+                data: focusStats.dailyTrend.map(d => d.date.slice(5)),
+                axisLine: { lineStyle: { color: '#E4E7ED' } },
+                axisLabel: { color: '#606266', fontSize: 11 }
+              },
+              yAxis: {
+                type: 'value',
+                axisLine: { show: false },
+                splitLine: { lineStyle: { color: '#E4E7ED', type: 'dashed' } },
+                axisLabel: {
+                  color: '#606266',
+                  fontSize: 11,
+                  formatter: (value: number) => {
+                    if (value >= 3600) return `${Math.floor(value / 3600)}h`
+                    return `${Math.floor(value / 60)}m`
+                  }
+                }
+              },
+              series: [
+                {
+                  type: 'bar',
+                  data: focusStats.dailyTrend.map(d => d.duration),
+                  itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                      { offset: 0, color: '#409EFF' },
+                      { offset: 1, color: '#67C23A' }
+                    ]),
+                    borderRadius: [4, 4, 0, 0]
+                  },
+                  barWidth: '60%'
+                }
+              ]
+            }"
+            autoresize
+          />
         </div>
       </div>
 
@@ -563,6 +772,86 @@ const streak = computed(() => {
   font-weight: 600;
 }
 
+/* Focus Section */
+.focus-section {
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    .section-icon {
+      margin-right: 8px;
+      color: #409EFF;
+    }
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    margin: 0;
+  }
+}
+
+.focus-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.focus-stat-card {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #bae6fd;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  text-align: center;
+  transition: all var(--transition-fast);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.focus-stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0369a1;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.focus-stat-label {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.focus-chart-container {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-gray-100);
+}
+
+.chart-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0 0 16px;
+}
+
+.focus-pie-chart {
+  height: 280px;
+}
+
+.focus-line-chart {
+  height: 200px;
+}
+
 /* Empty State */
 .empty-state {
   text-align: center;
@@ -732,6 +1021,26 @@ const streak = computed(() => {
 
   .daily-label {
     font-size: 9px;
+  }
+}
+
+@media (max-width: 768px) {
+  .focus-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .focus-stat-value {
+    font-size: 16px;
+  }
+
+  .focus-pie-chart {
+    height: 240px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 </style>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-import { User, Trophy, Star, Plus } from '@element-plus/icons-vue'
+import { User, Trophy, Star, Plus, Timer } from '@element-plus/icons-vue'
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 
 const route = useRoute()
@@ -11,6 +11,7 @@ const isHome = computed(() => route.path === '/')
 const goToProfile = () => router.push('/profile')
 const goToLeaderboard = () => router.push('/leaderboard')
 const goToDefaultTasks = () => router.push('/default-tasks')
+const goToFocus = () => router.push('/focus')
 const goToHome = () => router.push('/')
 
 // Draggable button state
@@ -186,6 +187,19 @@ onMounted(() => {
       <div class="nav-item-wrapper">
         <button
           class="nav-item"
+          :class="{ active: route.path === '/focus' }"
+          @click="goToFocus"
+        >
+          <div class="nav-icon">
+            <Timer />
+          </div>
+          <span class="nav-label">专注</span>
+        </button>
+      </div>
+
+      <div class="nav-item-wrapper">
+        <button
+          class="nav-item"
           :class="{ active: route.path === '/default-tasks' }"
           @click="goToDefaultTasks"
         >
@@ -267,7 +281,7 @@ onMounted(() => {
   backdrop-filter: blur(10px);
   border-top: 1px solid var(--color-primary-lighter);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   align-items: flex-end;
   padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
   z-index: 1000;

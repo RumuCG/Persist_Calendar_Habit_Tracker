@@ -15,8 +15,9 @@ model User {
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt @map("updated_at")
 
-  plans         Plan[]
-  refreshTokens RefreshToken[]
+  plans           Plan[]
+  refreshTokens   RefreshToken[]
+  focusSessions   FocusSession[]
 
   @@map("users")
 }
@@ -49,4 +50,25 @@ model RefreshToken {
 
   @@index([token])
   @@map("refresh_tokens")
+}
+
+model FocusSession {
+  id                Int           @id @default(autoincrement())
+  userId            Int           @map("user_id")
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title             String        @default("未命名专注")
+  startTime         DateTime      @map("start_time")
+  endTime           DateTime?     @map("end_time")
+  duration          Int           // 实际专注时长（秒）
+  expectedDuration  Int?          @map("expected_duration") // 预期时长（倒计时模式使用，单位：秒）
+  mode              String        // 计时模式: COUNTDOWN | STOPWATCH
+  isCompleted       Boolean       @default(false) @map("is_completed")
+  isAbandoned       Boolean       @default(false) @map("is_abandoned")
+  interruptReason   String?       @map("interrupt_reason")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  @@index([userId, startTime])
+  @@index([userId, mode])
+  @@map("focus_sessions")
 }

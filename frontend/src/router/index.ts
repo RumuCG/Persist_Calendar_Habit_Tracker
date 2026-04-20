@@ -47,6 +47,11 @@ const router = createRouter({
           name: 'DefaultTasks',
           component: () => import('@/views/DefaultTasksView.vue'),
         },
+        {
+          path: 'focus',
+          name: 'Focus',
+          component: () => import('@/views/FocusView.vue'),
+        },
       ],
     },
     {
