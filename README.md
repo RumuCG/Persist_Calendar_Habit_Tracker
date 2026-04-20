@@ -23,6 +23,8 @@ A calendar-based habit tracking application for managing daily check-in plans.
 - 📊 **Statistics** - Personal completion analytics
 - 🏆 **Leaderboard** - Daily, monthly, yearly rankings
 - 🔐 **User Auth** - JWT-based authentication
+- 🍅 **Focus Mode** - Pomodoro-style focus timer for deep work sessions
+- 📈 **Study Stats** - Track total focus time and session history
 
 ---
 
