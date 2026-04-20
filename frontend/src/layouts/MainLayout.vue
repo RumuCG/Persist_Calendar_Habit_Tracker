@@ -266,7 +266,7 @@ onMounted(() => {
   flex: 1;
   padding: 20px 16px 100px;
   overflow: auto;
-  max-width: 480px;
+  max-width: 640px;
   margin: 0 auto;
   width: 100%;
 }
@@ -285,10 +285,7 @@ onMounted(() => {
   align-items: flex-end;
   padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
   z-index: 1000;
-  max-width: 480px;
-  margin: 0 auto;
-  left: 50%;
-  transform: translateX(-50%);
+  width: 100%;
   height: 70px;
   box-sizing: border-box;
 }
@@ -312,10 +309,11 @@ onMounted(() => {
   background: none;
   border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s var(--transition-spring);
   color: var(--text-tertiary);
   width: 100%;
   height: auto;
+  position: relative;
 }
 
 .nav-item.active {
@@ -323,7 +321,7 @@ onMounted(() => {
 }
 
 .nav-item:active {
-  transform: scale(0.95);
+  transform: scale(0.92);
 }
 
 .nav-icon {
@@ -332,7 +330,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.3s var(--transition-spring);
 }
 
 .nav-icon svg {
@@ -343,7 +341,7 @@ onMounted(() => {
 .nav-label {
   font-size: 11px;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: all 0.3s var(--transition-spring);
 }
 
 .nav-item.active .nav-icon {
@@ -352,6 +350,17 @@ onMounted(() => {
 
 .nav-item.active .nav-label {
   font-weight: 700;
+}
+
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  width: 20px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border-radius: 2px;
+  transition: all 0.3s var(--transition-spring);
 }
 
 /* Center Wrapper */

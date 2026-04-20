@@ -122,7 +122,7 @@ const pieChartData = computed(() => {
 })
 
 // 饼图颜色
-const pieChartColors = ['#409EFF', '#67C23A', '#E6A23C', '#F56C6C', '#909399', '#8B5CF6']
+const pieChartColors = ['#ec4899', '#f472b6', '#fbbf24', '#10b981', '#8b5cf6', '#3b82f6']
 </script>
 
 <template>
@@ -306,14 +306,14 @@ const pieChartColors = ['#409EFF', '#67C23A', '#E6A23C', '#F56C6C', '#909399', '
                 type: 'category',
                 data: focusStats.dailyTrend.map(d => d.date.slice(5)),
                 axisLine: { lineStyle: { color: '#E4E7ED' } },
-                axisLabel: { color: '#606266', fontSize: 11 }
+                axisLabel: { color: '#6b7280', fontSize: 11 }
               },
               yAxis: {
                 type: 'value',
                 axisLine: { show: false },
-                splitLine: { lineStyle: { color: '#E4E7ED', type: 'dashed' } },
+                splitLine: { lineStyle: { color: '#e5e7eb', type: 'dashed' } },
                 axisLabel: {
-                  color: '#606266',
+                  color: '#6b7280',
                   fontSize: 11,
                   formatter: (value: number) => {
                     if (value >= 3600) return `${Math.floor(value / 3600)}h`
@@ -327,8 +327,8 @@ const pieChartColors = ['#409EFF', '#67C23A', '#E6A23C', '#F56C6C', '#909399', '
                   data: focusStats.dailyTrend.map(d => d.duration),
                   itemStyle: {
                     color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                      { offset: 0, color: '#409EFF' },
-                      { offset: 1, color: '#67C23A' }
+                      { offset: 0, color: '#ec4899' },
+                      { offset: 1, color: '#f472b6' }
                     ]),
                     borderRadius: [4, 4, 0, 0]
                   },
@@ -784,7 +784,7 @@ const pieChartColors = ['#409EFF', '#67C23A', '#E6A23C', '#F56C6C', '#909399', '
 
     .section-icon {
       margin-right: 8px;
-      color: #409EFF;
+      color: var(--color-primary);
     }
   }
 

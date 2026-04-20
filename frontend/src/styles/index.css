@@ -187,6 +187,22 @@ body {
   50% { opacity: 0.5; }
 }
 
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(236, 72, 153, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(236, 72, 153, 0.4); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -231,10 +247,18 @@ body {
   animation: float 3s ease-in-out infinite;
 }
 
-/* Focus Styles */
+/* Remove tap highlight on mobile and focus outline globally */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+*:focus {
+  outline: none;
+}
+
 *:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  outline: none;
 }
 
 /* Button Reset */
@@ -248,6 +272,43 @@ button {
 /* Input Reset */
 input, textarea {
   font-family: inherit;
+}
+
+/* Element Plus Theme Overrides */
+.el-button--primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border: none;
+}
+
+.el-button--primary:hover,
+.el-button--primary:focus {
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+}
+
+.el-radio-button__original-radio:checked + .el-radio-button__inner {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border-color: var(--color-primary);
+  box-shadow: -1px 0 0 0 var(--color-primary);
+}
+
+.el-slider__runway {
+  --el-slider-main-bg-color: var(--color-primary);
+}
+
+.el-slider__bar {
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+}
+
+.el-slider__button {
+  border-color: var(--color-primary);
+}
+
+.el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px var(--color-primary) inset;
+}
+
+.el-progress-circle__path {
+  stroke: url(#progressGradient);
 }
 
 /* Mobile Touch Optimization */

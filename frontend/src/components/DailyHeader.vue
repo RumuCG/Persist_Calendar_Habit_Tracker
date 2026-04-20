@@ -288,12 +288,18 @@ const isToday = computed(() => {
   stroke: #fbbf24;
   stroke-width: 6;
   stroke-linecap: round;
-  transition: stroke-dasharray var(--transition-spring);
+  transition: stroke-dasharray var(--transition-spring), filter 0.3s ease;
 }
 
 .progress-ring-fill.is-complete {
   stroke: #fbbf24;
-  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6));
+  filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.8));
+  animation: ringPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes ringPulse {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.5)); }
+  50% { filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.9)); }
 }
 
 .progress-value {

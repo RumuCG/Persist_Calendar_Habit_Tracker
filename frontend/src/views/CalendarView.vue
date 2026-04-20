@@ -207,13 +207,13 @@ onMounted(() => {
   font-size: 14px;
   font-weight: 600;
   border-radius: var(--radius-full);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
   transition: all var(--transition-fast);
 }
 
 .add-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 6px 16px rgba(236, 72, 153, 0.4);
 }
 
 .add-btn svg {

@@ -411,7 +411,7 @@ const currentUserStats = computed(() => {
   color: white;
   padding: 20px 24px;
   border-radius: var(--radius-xl);
-  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 10px 30px rgba(236, 72, 153, 0.3);
   margin-bottom: 20px;
 }
 
@@ -594,7 +594,7 @@ const currentUserStats = computed(() => {
 .focus-duration {
   font-size: 14px;
   font-weight: 600;
-  color: #409EFF;
+  color: var(--color-primary);
   white-space: nowrap;
   flex-shrink: 0;
 }

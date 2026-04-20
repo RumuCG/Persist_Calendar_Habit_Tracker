@@ -120,6 +120,19 @@ const goBack = () => router.push('/profile')
 onMounted(() => {
   fetchTasks()
 })
+
+// Expose for tests
+defineExpose({
+  tasks,
+  loading,
+  modalVisible,
+  isEditMode,
+  editingId,
+  formTitle,
+  formDescription,
+  openEditModal,
+  handleSubmit,
+})
 </script>
 
 <template>
@@ -362,13 +375,13 @@ onMounted(() => {
   font-size: 16px;
   font-weight: 700;
   border-radius: var(--radius-full);
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
   transition: all var(--transition-fast);
 }
 
 .empty-add-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.45);
 }
 
 .empty-add-btn svg {
@@ -465,25 +478,25 @@ onMounted(() => {
 /* Floating Action Button */
 .fab {
   position: fixed;
-  bottom: 24px;
+  bottom: 90px;
   left: 50%;
   transform: translateX(-50%);
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   border-radius: var(--radius-full);
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
   transition: all var(--transition-spring);
   z-index: 100;
 }
 
 .fab:hover {
   transform: translateX(-50%) scale(1.05) rotate(90deg);
-  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.5);
+  box-shadow: 0 10px 28px rgba(236, 72, 153, 0.5);
 }
 
 .fab:active {
@@ -491,8 +504,8 @@ onMounted(() => {
 }
 
 .fab svg {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
 }
 
 /* Modal */

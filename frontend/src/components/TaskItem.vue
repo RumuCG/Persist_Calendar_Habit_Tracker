@@ -187,8 +187,8 @@ const priorityColor = computed(() => {
 }
 
 .task-item:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -6px rgba(236, 72, 153, 0.15), var(--shadow-md);
+  transform: translateY(-3px);
 }
 
 .task-item.is-completed {
@@ -197,12 +197,12 @@ const priorityColor = computed(() => {
 }
 
 .task-item.is-default {
-  background: #fce7f3;
+  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
   border-color: #fbcfe8;
 }
 
 .task-item.is-default:hover {
-  background: #f9d5e8;
+  background: linear-gradient(135deg, #fce7f3 0%, #f9d5e8 100%);
   border-color: #f9a8d4;
 }
 
@@ -318,7 +318,7 @@ const priorityColor = computed(() => {
 .task-checkbox.is-checked .checkbox-ring {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
   border-color: var(--color-primary);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.35);
 }
 
 .checkbox-inner {

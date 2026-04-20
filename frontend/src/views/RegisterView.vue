@@ -188,17 +188,23 @@ const goToLogin = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 40%, #fbcfe8 100%);
   padding: 20px;
+  position: relative;
+  overflow: hidden;
 }
 
 .register-box {
   width: 100%;
   max-width: 420px;
   padding: 40px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24px;
+  box-shadow: 0 25px 80px -20px rgba(236, 72, 153, 0.25), 0 8px 24px -8px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  position: relative;
+  z-index: 1;
 }
 
 .register-header {
@@ -207,15 +213,19 @@ const goToLogin = () => {
 }
 
 .title {
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
+  font-size: 32px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0 0 8px;
+  font-family: var(--font-display);
 }
 
 .subtitle {
   font-size: 14px;
-  color: var(--el-text-color-secondary);
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -226,6 +236,19 @@ const goToLogin = () => {
 .register-button {
   width: 100%;
   margin-top: 8px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border: none;
+  height: 48px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
+  transition: all var(--transition-fast);
+}
+
+.register-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.45);
 }
 
 .password-toggle {

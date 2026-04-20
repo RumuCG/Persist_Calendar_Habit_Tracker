@@ -361,7 +361,16 @@ const priorityOptions = [
 .submit-btn {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   border: none;
-  padding: 0 24px;
+  padding: 0 28px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+  transition: all var(--transition-fast);
+}
+
+.submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(236, 72, 153, 0.4);
 }
 
 /* Dialog styling */

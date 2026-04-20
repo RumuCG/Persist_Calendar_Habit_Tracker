@@ -126,7 +126,7 @@ const isHoliday = computed(() => holidayInfo.value?.type === 'holiday')
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 2px 8px rgba(236, 72, 153, 0.3);
 }
 
 .has-plans {

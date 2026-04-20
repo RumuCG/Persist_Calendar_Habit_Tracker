@@ -287,10 +287,14 @@ onUnmounted(() => {
   gap: 32px;
 
   .title {
-    font-size: 32px;
-    font-weight: 600;
-    color: #303133;
+    font-size: 36px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin: 0;
+    font-family: var(--font-display);
   }
 
   .input-section {
@@ -313,7 +317,8 @@ onUnmounted(() => {
 
     .section-label {
       font-size: 14px;
-      color: #606266;
+      color: var(--text-secondary);
+      font-weight: 600;
     }
   }
 
@@ -327,7 +332,8 @@ onUnmounted(() => {
 
     .section-label {
       font-size: 14px;
-      color: #606266;
+      color: var(--text-secondary);
+      font-weight: 600;
     }
 
     .duration-presets {
@@ -343,22 +349,32 @@ onUnmounted(() => {
     }
 
     .duration-display {
-      font-size: 18px;
-      font-weight: 600;
-      color: #409EFF;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-primary);
     }
   }
 
   .start-button {
-    width: 200px;
+    width: 220px;
     height: 56px;
     font-size: 18px;
-    border-radius: 28px;
+    font-weight: 700;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    border: none;
+    box-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
+    transition: all var(--transition-fast);
 
     .button-icon {
       margin-right: 8px;
       font-size: 20px;
     }
+  }
+
+  .start-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.45);
   }
 }
 
@@ -368,12 +384,12 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   gap: 32px;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.5s var(--transition-spring);
 
   .focus-title {
     font-size: 24px;
-    font-weight: 500;
-    color: #303133;
+    font-weight: 600;
+    color: var(--text-primary);
     text-align: center;
   }
 
@@ -382,7 +398,7 @@ onUnmounted(() => {
 
     .timer-progress {
       :deep(.el-progress-circle__track) {
-        stroke: #EBEEF5;
+        stroke: var(--color-gray-100);
       }
     }
 
@@ -390,7 +406,7 @@ onUnmounted(() => {
       font-size: 56px;
       font-weight: 700;
       font-family: 'JetBrains Mono', 'SF Mono', monospace;
-      color: #303133;
+      color: var(--text-primary);
       letter-spacing: 4px;
     }
 
@@ -398,7 +414,7 @@ onUnmounted(() => {
       font-size: 72px;
       font-weight: 700;
       font-family: 'JetBrains Mono', 'SF Mono', monospace;
-      color: #303133;
+      color: var(--text-primary);
       letter-spacing: 4px;
       text-align: center;
       min-width: 300px;

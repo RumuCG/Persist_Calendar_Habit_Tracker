@@ -367,6 +367,15 @@ onMounted(() => {
       </div>
     </Transition>
 
+    <!-- Floating Add Button -->
+    <button
+      class="fab"
+      @click="handleAddTask"
+      aria-label="添加任务"
+    >
+      <Plus />
+    </button>
+
     <!-- Plan Modal -->
     <PlanModal
       v-model:visible="modalVisible"
@@ -482,7 +491,7 @@ onMounted(() => {
   font-size: 16px;
   font-weight: 700;
   border-radius: var(--radius-full);
-  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.4);
+  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
   transition: all var(--transition-fast);
 }
 
@@ -535,6 +544,38 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+/* Floating Action Button */
+.fab {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+  transition: all var(--transition-spring);
+  z-index: 100;
+}
+
+.fab:hover {
+  transform: scale(1.08) rotate(90deg);
+  box-shadow: 0 10px 28px rgba(236, 72, 153, 0.5);
+}
+
+.fab:active {
+  transform: scale(0.95);
+}
+
+.fab svg {
+  width: 26px;
+  height: 26px;
 }
 
 /* Calendar Drawer */
