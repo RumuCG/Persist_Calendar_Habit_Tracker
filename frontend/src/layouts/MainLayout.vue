@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-import { User, Trophy, Star, Plus, Timer } from '@element-plus/icons-vue'
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { User, Trophy, Star, List, Timer } from '@element-plus/icons-vue'
+import { computed } from 'vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -13,107 +13,6 @@ const goToLeaderboard = () => router.push('/leaderboard')
 const goToDefaultTasks = () => router.push('/default-tasks')
 const goToFocus = () => router.push('/focus')
 const goToHome = () => router.push('/')
-
-// Draggable button state
-const isDragging = ref(false)
-const buttonPos = ref({ x: 0, y: 0 })
-const dragStartPos = ref({ x: 0, y: 0 })
-const touchStartPos = ref({ x: 0, y: 0 })
-const centerButtonRef = ref<HTMLElement | null>(null)
-
-// Get the center position of the nav container
-const getCenterPosition = () => {
-  const nav = document.querySelector('.bottom-nav')
-  if (!nav) return { x: 0, y: 0 }
-  const rect = nav.getBoundingClientRect()
-  return {
-    x: rect.left + rect.width / 2 - 28, // 28 is half of button width (56px)
-    y: rect.top - 12 // slightly above nav
-  }
-}
-
-// Mouse/Touch event handlers for dragging
-const hasMoved = ref(false)
-const DRAG_THRESHOLD = 5 // pixels
-
-const handleDragStart = (e: MouseEvent | TouchEvent) => {
-  isDragging.value = true
-  hasMoved.value = false
-  const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
-  const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
-
-  touchStartPos.value = { x: clientX, y: clientY }
-  dragStartPos.value = { ...buttonPos.value }
-
-  if (centerButtonRef.value) {
-    centerButtonRef.value.style.transition = 'none'
-  }
-}
-
-const handleDragMove = (e: MouseEvent | TouchEvent) => {
-  if (!isDragging.value) return
-  e.preventDefault()
-
-  const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
-  const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
-
-  const deltaX = clientX - touchStartPos.value.x
-  const deltaY = clientY - touchStartPos.value.y
-
-  // Check if moved beyond threshold
-  if (Math.abs(deltaX) > DRAG_THRESHOLD || Math.abs(deltaY) > DRAG_THRESHOLD) {
-    hasMoved.value = true
-  }
-
-  buttonPos.value = {
-    x: dragStartPos.value.x + deltaX,
-    y: dragStartPos.value.y + deltaY
-  }
-}
-
-const handleDragEnd = () => {
-  if (!isDragging.value) return
-  isDragging.value = false
-
-  // Animate back to center position
-  const centerPos = getCenterPosition()
-  buttonPos.value = centerPos
-
-  if (centerButtonRef.value) {
-    centerButtonRef.value.style.transition = 'left 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), top 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)'
-  }
-}
-
-onMounted(() => {
-  // Initialize button position
-  const updatePosition = () => {
-    const centerPos = getCenterPosition()
-    buttonPos.value = centerPos
-  }
-
-  // Set initial position
-  setTimeout(updatePosition, 100)
-
-  // Update on resize
-  window.addEventListener('resize', updatePosition)
-
-  // Global move/up handlers
-  const handleGlobalMove = (e: MouseEvent | TouchEvent) => handleDragMove(e)
-  const handleGlobalEnd = () => handleDragEnd()
-
-  document.addEventListener('mousemove', handleGlobalMove)
-  document.addEventListener('mouseup', handleGlobalEnd)
-  document.addEventListener('touchmove', handleGlobalMove, { passive: false })
-  document.addEventListener('touchend', handleGlobalEnd)
-
-  onUnmounted(() => {
-    window.removeEventListener('resize', updatePosition)
-    document.removeEventListener('mousemove', handleGlobalMove)
-    document.removeEventListener('mouseup', handleGlobalEnd)
-    document.removeEventListener('touchmove', handleGlobalMove)
-    document.removeEventListener('touchend', handleGlobalEnd)
-  })
-})
 </script>
 
 <template>
@@ -147,28 +46,17 @@ onMounted(() => {
         </button>
       </div>
 
-      <div class="nav-item-wrapper center-wrapper">
-        <!-- Draggable floating button -->
-        <div
-          ref="centerButtonRef"
-          class="nav-item-center"
-          :class="{ active: isHome, dragging: isDragging }"
-          :style="{
-            left: `${buttonPos.x}px`,
-            top: `${buttonPos.y}px`,
-            transform: isDragging ? 'scale(1.1)' : 'scale(1)'
-          }"
-          @mousedown="handleDragStart"
-          @touchstart="handleDragStart"
-          @click="!hasMoved && goToHome()"
+      <div class="nav-item-wrapper">
+        <button
+          class="nav-item"
+          :class="{ active: isHome }"
+          @click="goToHome"
         >
-          <div class="nav-icon-center">
-            <Plus />
+          <div class="nav-icon">
+            <List />
           </div>
-          <span class="nav-label">今日任务</span>
-        </div>
-        <!-- Placeholder to maintain grid layout -->
-        <div class="nav-item-placeholder"></div>
+          <span class="nav-label">任务管理</span>
+        </button>
       </div>
 
       <div class="nav-item-wrapper">
@@ -361,76 +249,6 @@ onMounted(() => {
   background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   border-radius: 2px;
   transition: all 0.3s var(--transition-spring);
-}
-
-/* Center Wrapper */
-.center-wrapper {
-  position: static;
-}
-
-.nav-item-placeholder {
-  height: 50px;
-  width: 100%;
-}
-
-/* Center Button (Home) - Draggable floating button */
-.nav-item-center {
-  position: fixed;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: grab;
-  user-select: none;
-  touch-action: none;
-  z-index: 1001;
-  left: 0;
-  top: 0;
-  will-change: left, top;
-}
-
-.nav-item-center:active {
-  cursor: grabbing;
-}
-
-.nav-item-center.dragging .nav-icon-center {
-  box-shadow: 0 8px 24px rgba(236, 72, 153, 0.6);
-}
-
-.nav-icon-center {
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.4);
-  transition: box-shadow 0.2s ease;
-  pointer-events: none;
-}
-
-.nav-icon-center svg {
-  width: 28px;
-  height: 28px;
-  color: white;
-}
-
-.nav-item-center.active .nav-icon-center {
-  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.5);
-}
-
-.nav-item-center .nav-label {
-  margin-top: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-tertiary);
-  transition: all 0.3s ease;
-  pointer-events: none;
-}
-
-.nav-item-center.active .nav-label {
-  color: var(--color-primary);
-  font-weight: 700;
 }
 
 /* Animations */
